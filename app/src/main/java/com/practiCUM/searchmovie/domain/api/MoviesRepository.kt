@@ -1,7 +1,8 @@
 package com.practiCUM.searchmovie.domain.api
 
 import com.practiCUM.searchmovie.domain.models.Movie
+import com.practiCUM.searchmovie.util.Resource
 
 interface MoviesRepository {
-    fun searchMovies(expression: String): List<Movie>
+    fun searchMovies(expression: String): Resource<List<Movie>>
 }
