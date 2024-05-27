@@ -1,20 +1,16 @@
 package com.practiCUM.searchmovie.presentation.movies
 
 import android.content.Context
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
-import android.view.View
 import android.widget.Toast
 import com.practiCUM.searchmovie.util.Creator
 import com.practiCUM.searchmovie.R
 import com.practiCUM.searchmovie.domain.api.MoviesInteractor
 import com.practiCUM.searchmovie.domain.models.Movie
-import com.practiCUM.searchmovie.ui.movies.MoviesAdapter
 
 class MoviesSearchPresenter(
-    private val adapter: MoviesAdapter,
     private val context: Context,
     private val view: MoviesView
 ) {
@@ -50,7 +46,7 @@ class MoviesSearchPresenter(
                             if (foundMovie != null) {
                                 movies.clear()
                                 movies.addAll(foundMovie)
-                                adapter.notifyDataSetChanged()
+                                view.updateMoviesList(movies)
                                 view.showMoviesList(true)
                             }
                             if (errorMessage != null) {
@@ -75,12 +71,6 @@ class MoviesSearchPresenter(
     private val movies = ArrayList<Movie>()
 
 
-    fun onCreate() {
-
-        adapter.movies = movies
-
-    }
-
     fun onDestroy() {
         handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
     }
@@ -91,7 +81,7 @@ class MoviesSearchPresenter(
         if (text.isNotEmpty()) {
             view.showPlaceholderMessage(true)
             movies.clear()
-            adapter.notifyDataSetChanged()
+            view.updateMoviesList(movies)
             view.changePlaceholderText(text)
             if (additionalMessage.isNotEmpty()) {
                 Toast.makeText(context, additionalMessage, Toast.LENGTH_LONG)

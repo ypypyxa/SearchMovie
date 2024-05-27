@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.practiCUM.searchmovie.util.Creator
 import com.practiCUM.searchmovie.R
+import com.practiCUM.searchmovie.domain.models.Movie
 import com.practiCUM.searchmovie.presentation.movies.MoviesView
 import com.practiCUM.searchmovie.ui.poster.PosterActivity
 
@@ -44,7 +45,6 @@ class MoviesActivity : AppCompatActivity(), MoviesView {
     private val handler = Handler(Looper.getMainLooper())
 
     private val moviesSearchPresenter = Creator.provideMoviesSearchController(
-        adapter = adapter,
         context = this,
         moviesView = this
     )
@@ -74,7 +74,7 @@ class MoviesActivity : AppCompatActivity(), MoviesView {
         }
         textWatcher?.let { queryInput.addTextChangedListener(it) }
 
-        moviesSearchPresenter.onCreate()
+//        moviesSearchPresenter.onCreate()
     }
 
     override fun onDestroy() {
@@ -106,5 +106,11 @@ class MoviesActivity : AppCompatActivity(), MoviesView {
 
     override fun changePlaceholderText(newPlaceholderText: String) {
         placeholderMessage.text = newPlaceholderText
+    }
+
+    override fun updateMoviesList(newMoviesList: List<Movie>) {
+        adapter.movies.clear()
+        adapter.movies.addAll(newMoviesList)
+        adapter.notifyDataSetChanged()
     }
 }

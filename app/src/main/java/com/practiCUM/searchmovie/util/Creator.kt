@@ -22,12 +22,10 @@ object Creator {
     }
 
     fun provideMoviesSearchController(
-        adapter: MoviesAdapter,
         context: Context,
         moviesView: MoviesView
     ): MoviesSearchPresenter {
         return MoviesSearchPresenter(
-            adapter = adapter,
             context = context,
             view = moviesView
         )
