@@ -1,5 +1,6 @@
 package com.practiCUM.searchmovie.presentation.movies
 
+import android.content.Context
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -13,11 +14,12 @@ import com.practiCUM.searchmovie.domain.models.Movie
 import com.practiCUM.searchmovie.ui.movies.MoviesAdapter
 
 class MoviesSearchPresenter(
-    private val view: MoviesView,
-    private val adapter: MoviesAdapter
+    private val adapter: MoviesAdapter,
+    private val context: Context,
+    private val view: MoviesView
 ) {
 
-    private val moviesInteractor = Creator.provideMoviesInteractor(view)
+    private val moviesInteractor = Creator.provideMoviesInteractor(context)
     private val handler = Handler(Looper.getMainLooper())
 
     fun searchDebounce(changedText: String) {
@@ -35,26 +37,26 @@ class MoviesSearchPresenter(
 
     private fun searchRequest(newSearchText: String) {
         if (newSearchText.isNotEmpty()) {
-            placeholderMessage.visibility = View.GONE
-            moviesList.visibility = View.GONE
-            progressbar.visibility = View.VISIBLE
+            view.showPlaceholderMessage(false)
+            view.showMoviesList(false)
+            view.showProgressBar(true)
 
             moviesInteractor.searchMovies(
                 newSearchText,
                 object : MoviesInteractor.MoviesConsumer {
                     override fun consume(foundMovie: List<Movie>?, errorMessage: String?) {
                         handler.post {
-                            progressBar.visibility = View.GONE
+                            view.showProgressBar(false)
                             if (foundMovie != null) {
                                 movies.clear()
                                 movies.addAll(foundMovie)
                                 adapter.notifyDataSetChanged()
-                                moviesList.visibility = View.VISIBLE
+                                view.showMoviesList(true)
                             }
                             if (errorMessage != null) {
-                                showMessage(view.getString(R.string.something_went_wrong))
+                                showMessage(context.getString(R.string.something_went_wrong), errorMessage)
                             } else if (movies.isEmpty()) {
-                                showMessage(view.getString(R.string.nothing_found))
+                                showMessage(context.getString(R.string.nothing_found), "")
                             } else {
                                 hideMessage()
                             }
@@ -87,20 +89,20 @@ class MoviesSearchPresenter(
 
     private fun showMessage(text: String, additionalMessage: String) {
         if (text.isNotEmpty()) {
-            placeholderMessage.visibility = View.VISIBLE
+            view.showPlaceholderMessage(true)
             movies.clear()
             adapter.notifyDataSetChanged()
-            placeholderMessage.text = text
+            view.changePlaceholderText(text)
             if (additionalMessage.isNotEmpty()) {
-                Toast.makeText(view, additionalMessage, Toast.LENGTH_LONG)
+                Toast.makeText(context, additionalMessage, Toast.LENGTH_LONG)
                     .show()
             }
         } else {
-            placeholderMessage.visibility = View.GONE
+            view.showPlaceholderMessage(false)
         }
     }
 
     private fun hideMessage() {
-        placeholderMessage.visibility = View.GONE
+        view.showPlaceholderMessage(false)
     }
 }

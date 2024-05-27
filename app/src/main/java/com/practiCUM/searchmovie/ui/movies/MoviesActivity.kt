@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -42,7 +43,11 @@ class MoviesActivity : AppCompatActivity(), MoviesView {
 
     private val handler = Handler(Looper.getMainLooper())
 
-    private val moviesSearchPresenter = Creator.provideMoviesSearchController(this, adapter)
+    private val moviesSearchPresenter = Creator.provideMoviesSearchController(
+        adapter = adapter,
+        context = this,
+        moviesView = this
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,5 +90,21 @@ class MoviesActivity : AppCompatActivity(), MoviesView {
             handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
         }
         return current
+    }
+
+    override fun showPlaceholderMessage(isVisible: Boolean) {
+        placeholderMessage.visibility = if (isVisible) View.VISIBLE else View.GONE
+    }
+
+    override fun showMoviesList(isVisible: Boolean) {
+        moviesList.visibility = if (isVisible) View.VISIBLE else View.GONE
+    }
+
+    override fun showProgressBar(isVisible: Boolean) {
+        progressBar.visibility = if (isVisible) View.VISIBLE else View.GONE
+    }
+
+    override fun changePlaceholderText(newPlaceholderText: String) {
+        placeholderMessage.text = newPlaceholderText
     }
 }
