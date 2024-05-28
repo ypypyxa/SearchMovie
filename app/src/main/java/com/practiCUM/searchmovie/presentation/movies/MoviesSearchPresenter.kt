@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
-import android.widget.Toast
 import com.practiCUM.searchmovie.util.Creator
 import com.practiCUM.searchmovie.R
 import com.practiCUM.searchmovie.domain.api.MoviesInteractor
@@ -84,8 +83,7 @@ class MoviesSearchPresenter(
             view.updateMoviesList(movies)
             view.changePlaceholderText(text)
             if (additionalMessage.isNotEmpty()) {
-                Toast.makeText(context, additionalMessage, Toast.LENGTH_LONG)
-                    .show()
+                view.showToast(additionalMessage)
             }
         } else {
             view.showPlaceholderMessage(false)

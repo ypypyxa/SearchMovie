@@ -8,4 +8,5 @@ interface MoviesView {
     fun showProgressBar(isVisible: Boolean)
     fun changePlaceholderText(newPlaceholderText: String)
     fun updateMoviesList(newMoviesList: List<Movie>)
+    fun showToast(additionalMessage: String)
 }

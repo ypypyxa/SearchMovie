@@ -8,9 +8,9 @@ import com.practiCUM.searchmovie.domain.api.MoviesInteractor
 import com.practiCUM.searchmovie.domain.api.MoviesRepository
 import com.practiCUM.searchmovie.domain.impl.MoviesInteractorImpl
 import com.practiCUM.searchmovie.presentation.movies.MoviesSearchPresenter
-import com.practiCUM.searchmovie.presentation.PosterController
+import com.practiCUM.searchmovie.presentation.poster.PosterPresenter
 import com.practiCUM.searchmovie.presentation.movies.MoviesView
-import com.practiCUM.searchmovie.ui.movies.MoviesAdapter
+import com.practiCUM.searchmovie.presentation.poster.PosterView
 
 object Creator {
     private fun getMoviesRepository(context: Context): MoviesRepository {
@@ -31,7 +31,10 @@ object Creator {
         )
     }
 
-    fun providePosterController(activity: Activity): PosterController {
-        return PosterController(activity)
+    fun providePosterPresenter(
+        view: PosterView,
+        url: String
+    ): PosterPresenter {
+        return PosterPresenter(view, url)
     }
 }
