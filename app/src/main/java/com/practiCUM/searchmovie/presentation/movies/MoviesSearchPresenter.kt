@@ -8,6 +8,7 @@ import com.practiCUM.searchmovie.util.Creator
 import com.practiCUM.searchmovie.R
 import com.practiCUM.searchmovie.domain.api.MoviesInteractor
 import com.practiCUM.searchmovie.domain.models.Movie
+import com.practiCUM.searchmovie.ui.movies.models.MoviesState
 
 class MoviesSearchPresenter(
     private val context: Context,
@@ -16,6 +17,8 @@ class MoviesSearchPresenter(
 
     private val moviesInteractor = Creator.provideMoviesInteractor(context)
     private val handler = Handler(Looper.getMainLooper())
+
+    private val movies = ArrayList<Movie>()
 
     fun searchDebounce(changedText: String) {
         handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
@@ -32,65 +35,54 @@ class MoviesSearchPresenter(
 
     private fun searchRequest(newSearchText: String) {
         if (newSearchText.isNotEmpty()) {
-            view.showPlaceholderMessage(false)
-            view.showMoviesList(false)
-            view.showProgressBar(true)
+            view.render(
+                MoviesState.Loading
+            )
 
-            moviesInteractor.searchMovies(
-                newSearchText,
-                object : MoviesInteractor.MoviesConsumer {
-                    override fun consume(foundMovie: List<Movie>?, errorMessage: String?) {
-                        handler.post {
-                            view.showProgressBar(false)
-                            if (foundMovie != null) {
-                                movies.clear()
-                                movies.addAll(foundMovie)
-                                view.updateMoviesList(movies)
-                                view.showMoviesList(true)
+            moviesInteractor.searchMovies(newSearchText, object : MoviesInteractor.MoviesConsumer {
+                override fun consume(foundMovie: List<Movie>?, errorMessage: String?) {
+                    handler.post {
+                        if (foundMovie != null) {
+                            movies.clear()
+                            movies.addAll(foundMovie)
+                        }
+
+                        when {
+                            errorMessage != null -> {
+                                view.render(
+                                    MoviesState.Error(
+                                        errorMessage = context.getString(R.string.something_went_wrong)
+                                    )
+                                )
+                                view.showToast(errorMessage)
                             }
-                            if (errorMessage != null) {
-                                showMessage(context.getString(R.string.something_went_wrong), errorMessage)
-                            } else if (movies.isEmpty()) {
-                                showMessage(context.getString(R.string.nothing_found), "")
-                            } else {
-                                hideMessage()
+                            movies.isEmpty() -> {
+                                view.render(
+                                    MoviesState.Empty(
+                                        message = context.getString(R.string.nothing_found)
+                                    )
+                                )
+                            }
+                            else -> {
+                                view.render(
+                                    MoviesState.Content(
+                                        movies = movies
+                                    )
+                                )
                             }
                         }
                     }
                 }
-            )
+            } )
         }
     }
-
-    companion object {
-        private const val SEARCH_DEBOUNCE_DELAY = 2000L
-        private val SEARCH_REQUEST_TOKEN = Any()
-    }
-
-    private val movies = ArrayList<Movie>()
-
 
     fun onDestroy() {
         handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
     }
 
-
-
-    private fun showMessage(text: String, additionalMessage: String) {
-        if (text.isNotEmpty()) {
-            view.showPlaceholderMessage(true)
-            movies.clear()
-            view.updateMoviesList(movies)
-            view.changePlaceholderText(text)
-            if (additionalMessage.isNotEmpty()) {
-                view.showToast(additionalMessage)
-            }
-        } else {
-            view.showPlaceholderMessage(false)
-        }
-    }
-
-    private fun hideMessage() {
-        view.showPlaceholderMessage(false)
+    companion object {
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+        private val SEARCH_REQUEST_TOKEN = Any()
     }
 }

@@ -18,6 +18,7 @@ import com.practiCUM.searchmovie.util.Creator
 import com.practiCUM.searchmovie.R
 import com.practiCUM.searchmovie.domain.models.Movie
 import com.practiCUM.searchmovie.presentation.movies.MoviesView
+import com.practiCUM.searchmovie.ui.movies.models.MoviesState
 import com.practiCUM.searchmovie.ui.poster.PosterActivity
 
 class MoviesActivity : AppCompatActivity(), MoviesView {
@@ -74,8 +75,15 @@ class MoviesActivity : AppCompatActivity(), MoviesView {
             }
         }
         textWatcher?.let { queryInput.addTextChangedListener(it) }
+    }
 
-//        moviesSearchPresenter.onCreate()
+    override fun render(state: MoviesState) {
+        when (state) {
+            is MoviesState.Content -> showContent(state.movies)
+            is MoviesState.Empty -> showEmpty(state.message)
+            is MoviesState.Error -> showError(state.errorMessage)
+            is MoviesState.Loading -> showLoading()
+        }
     }
 
     override fun onDestroy() {
@@ -93,30 +101,36 @@ class MoviesActivity : AppCompatActivity(), MoviesView {
         return current
     }
 
-    override fun showMoviesList(isVisible: Boolean) {
-        moviesList.visibility = if (isVisible) View.VISIBLE else View.GONE
+    fun showLoading() {
+        moviesList.visibility = View.GONE
+        placeholderMessage.visibility = View.VISIBLE
+        progressBar.visibility = View.VISIBLE
     }
 
-    override fun showPlaceholderMessage(isVisible: Boolean) {
-        placeholderMessage.visibility = if (isVisible) View.VISIBLE else View.GONE
+    fun showError(errorMessage: String) {
+        moviesList.visibility = View.GONE
+        placeholderMessage.visibility = View.VISIBLE
+        progressBar.visibility = View.GONE
+
+        placeholderMessage.text = errorMessage
     }
 
-    override fun changePlaceholderText(newPlaceholderText: String) {
-        placeholderMessage.text = newPlaceholderText
+    fun showEmpty(emptyMessage: String) {
+        showError(emptyMessage)
     }
 
-    override fun showProgressBar(isVisible: Boolean) {
-        progressBar.visibility = if (isVisible) View.VISIBLE else View.GONE
+    fun showContent(movies: List<Movie>) {
+        moviesList.visibility = View.VISIBLE
+        placeholderMessage.visibility = View.GONE
+        progressBar.visibility = View.GONE
+
+        adapter.movies.clear()
+        adapter.movies.addAll(movies)
+        adapter.notifyDataSetChanged()
     }
 
     override fun showToast(additionalMessage: String) {
         Toast.makeText(this, additionalMessage, Toast.LENGTH_LONG)
             .show()
-    }
-
-    override fun updateMoviesList(newMoviesList: List<Movie>) {
-        adapter.movies.clear()
-        adapter.movies.addAll(newMoviesList)
-        adapter.notifyDataSetChanged()
     }
 }

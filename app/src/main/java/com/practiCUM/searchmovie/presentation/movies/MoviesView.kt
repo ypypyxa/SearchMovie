@@ -1,12 +1,11 @@
 package com.practiCUM.searchmovie.presentation.movies
 
 import com.practiCUM.searchmovie.domain.models.Movie
+import com.practiCUM.searchmovie.ui.movies.models.MoviesState
 
 interface MoviesView {
-    fun showPlaceholderMessage(isVisible: Boolean)
-    fun showMoviesList(isVisible: Boolean)
-    fun showProgressBar(isVisible: Boolean)
-    fun changePlaceholderText(newPlaceholderText: String)
-    fun updateMoviesList(newMoviesList: List<Movie>)
+    // Методы, меняющие внешний вид экрана
+    fun render(state: MoviesState)
+    // Методы «одноразовых событий»
     fun showToast(additionalMessage: String)
 }
