@@ -2,6 +2,7 @@ package com.practiCUM.searchmovie.util
 
 import android.content.Context
 import com.practiCUM.searchmovie.data.MoviesRepositoryImpl
+import com.practiCUM.searchmovie.data.SharedPrefences.LocalStorage
 import com.practiCUM.searchmovie.data.network.RetrofitNetworkClient
 import com.practiCUM.searchmovie.domain.api.MoviesInteractor
 import com.practiCUM.searchmovie.domain.api.MoviesRepository
@@ -11,7 +12,13 @@ import com.practiCUM.searchmovie.presentation.poster.PosterView
 
 object Creator {
     private fun getMoviesRepository(context: Context): MoviesRepository {
-        return MoviesRepositoryImpl(RetrofitNetworkClient(context))
+        return MoviesRepositoryImpl(
+            RetrofitNetworkClient(context),
+            LocalStorage(context.getSharedPreferences(
+                "local_storage",
+                Context.MODE_PRIVATE)
+            )
+        )
     }
 
     fun provideMoviesInteractor(context: Context): MoviesInteractor {

@@ -5,4 +5,6 @@ import com.practiCUM.searchmovie.util.Resource
 
 interface MoviesRepository {
     fun searchMovies(expression: String): Resource<List<Movie>>
+    fun addMovieToFavorites(movie: Movie)
+    fun removeMovieFromFavorites(movie: Movie)
 }
