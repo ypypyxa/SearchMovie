@@ -1,10 +1,10 @@
 package com.practiCUM.searchmovie
 
 import android.app.Application
-import com.practiCUM.searchmovie.presentation.movies.MoviesSearchPresenter
+import com.practiCUM.searchmovie.presentation.movies.MoviesSearchViewModel
 
 class MoviesApplication : Application() {
 
-    var moviesSearchPresenter : MoviesSearchPresenter? = null
+    var moviesSearchViewModel : MoviesSearchViewModel? = null
 
 }
