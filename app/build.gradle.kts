@@ -37,12 +37,7 @@ android {
 }
 
 dependencies {
-    val moxyVersion = "2.2.2"
-
-    implementation("com.github.moxy-community:moxy:$moxyVersion")
-    implementation("com.github.moxy-community:moxy-android:$moxyVersion")
-    kapt("com.github.moxy-community:moxy-compiler:$moxyVersion")
-
+    implementation("io.insert-koin:koin-android:3.3.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

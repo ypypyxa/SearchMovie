@@ -12,16 +12,13 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.practiCUM.searchmovie.R
 import com.practiCUM.searchmovie.domain.models.Movie
-import com.practiCUM.searchmovie.presentation.movies.MoviesSearchViewModel
 import com.practiCUM.searchmovie.ui.movies.models.MoviesState
-import com.practiCUM.searchmovie.ui.movies.models.ToastState
 import com.practiCUM.searchmovie.ui.poster.PosterActivity
-import moxy.presenter.InjectPresenter
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MoviesActivity : ComponentActivity() {
 
@@ -55,16 +52,16 @@ class MoviesActivity : ComponentActivity() {
 
     private val handler = Handler(Looper.getMainLooper())
 
-    lateinit var moviesSearchViewModel: MoviesSearchViewModel
+    private val moviesSearchViewModel by viewModel<MoviesSearchViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_movies)
 
-        moviesSearchViewModel = ViewModelProvider(
-            this,
-            MoviesSearchViewModel.getViewModelFactory()
-        )[MoviesSearchViewModel::class.java]
+//        moviesSearchViewModel = ViewModelProvider(
+//            this,
+//            MoviesSearchViewModel.getViewModelFactory()
+//        )[MoviesSearchViewModel::class.java]
 
         placeholderMessage = findViewById(R.id.placeholderMessage)
         queryInput = findViewById(R.id.queryInput)
