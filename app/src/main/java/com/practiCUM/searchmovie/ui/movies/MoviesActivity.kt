@@ -19,9 +19,7 @@ import com.practiCUM.searchmovie.R
 import com.practiCUM.searchmovie.domain.models.Movie
 import com.practiCUM.searchmovie.presentation.movies.MoviesSearchViewModel
 import com.practiCUM.searchmovie.ui.movies.models.MoviesState
-import com.practiCUM.searchmovie.ui.movies.models.ToastState
 import com.practiCUM.searchmovie.ui.poster.PosterActivity
-import moxy.presenter.InjectPresenter
 
 class MoviesActivity : ComponentActivity() {
 
