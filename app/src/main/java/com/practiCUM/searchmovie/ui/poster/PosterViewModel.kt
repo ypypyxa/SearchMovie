@@ -1,6 +1,6 @@
 package com.practiCUM.searchmovie.ui.poster
 
-import SingleLiveEvent
+import com.practiCUM.searchmovie.util.SingleLiveEvent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 

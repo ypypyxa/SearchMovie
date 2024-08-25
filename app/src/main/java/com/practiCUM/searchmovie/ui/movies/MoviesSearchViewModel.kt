@@ -1,6 +1,5 @@
 package com.practiCUM.searchmovie.ui.movies
 
-import SingleLiveEvent
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
@@ -10,6 +9,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.practiCUM.searchmovie.R
+import com.practiCUM.searchmovie.util.SingleLiveEvent
 import com.practiCUM.searchmovie.domain.api.MoviesInteractor
 import com.practiCUM.searchmovie.domain.models.Movie
 import com.practiCUM.searchmovie.ui.movies.models.MoviesState
