@@ -1,10 +1,13 @@
 package com.practiCUM.searchmovie.data
 
 import com.practiCUM.searchmovie.data.SharedPrefences.LocalStorage
+import com.practiCUM.searchmovie.data.dto.MovieDetailsResponse
+import com.practiCUM.searchmovie.data.dto.MovieDetailsRequest
 import com.practiCUM.searchmovie.data.dto.MoviesResponse
 import com.practiCUM.searchmovie.data.dto.MoviesSearchRequest
 import com.practiCUM.searchmovie.domain.api.MoviesRepository
 import com.practiCUM.searchmovie.domain.models.Movie
+import com.practiCUM.searchmovie.domain.models.MovieDetails
 import com.practiCUM.searchmovie.util.Resource
 
 class MoviesRepositoryImpl(
@@ -34,6 +37,37 @@ class MoviesRepositoryImpl(
             }
             else -> {
                 Resource.Error("Ошибка сервера")
+            }
+        }
+    }
+
+    override fun getMovieDetails(movieId: String): Resource<MovieDetails> {
+        val response = networkClient.doRequest(MovieDetailsRequest(movieId))
+        return when (response.resultCode) {
+            -1 -> {
+                Resource.Error("Проверьте подключение к интернету")
+            }
+            200 -> {
+                with(response as MovieDetailsResponse) {
+                    Resource.Success(
+                        MovieDetails(
+                            id,
+                            title,
+                            imDbRating,
+                            year,
+                            countries,
+                            genres,
+                            directors,
+                            writers,
+                            stars,
+                            plot
+                        )
+                    )
+                }
+            }
+            else -> {
+                Resource.Error("Ошибка сервера")
+
             }
         }
     }
