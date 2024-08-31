@@ -1,26 +1,31 @@
 package com.practiCUM.searchmovie.ui.movies
 
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
-import com.practiCUM.searchmovie.R
+import com.practiCUM.searchmovie.databinding.FragmentMoviesBinding
 import com.practiCUM.searchmovie.domain.models.Movie
 import com.practiCUM.searchmovie.ui.movies.models.MoviesState
-import com.practiCUM.searchmovie.ui.details.DetailsActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.practiCUM.searchmovie.R
+import androidx.fragment.app.commit
+import com.practiCUM.searchmovie.ui.details.DetailsFragment
 
-class MoviesActivity : ComponentActivity() {
+class MoviesFragment : Fragment() {
+
+    private lateinit var binding: FragmentMoviesBinding
 
     companion object {
         private const val CLICK_DEBOUNCE_DELAY = 1000L
@@ -30,10 +35,22 @@ class MoviesActivity : ComponentActivity() {
         object : MoviesAdapter.MovieClickListener {
             override fun onMovieClick(movie: Movie) {
                 if (clickDebounce()) {
-                    val intent = Intent(this@MoviesActivity, DetailsActivity::class.java)
-                    intent.putExtra("poster", movie.image)
-                    intent.putExtra("id", movie.id)
-                    startActivity(intent)
+                    parentFragmentManager.commit {
+                        replace(
+                            // Указали, в каком контейнере работаем
+                            R.id.rootFragmentContainerView,
+                            // Создали фрагмент
+                            DetailsFragment.newInstance(
+                                movieId = movie.id,
+                                posterUrl = movie.image
+                            ),
+                            // Указали тег фрагмента
+                            DetailsFragment.TAG
+                        )
+
+                        // Добавляем фрагмент в Back Stack
+                        addToBackStack(DetailsFragment.TAG)
+                    }
                 }
             }
 
@@ -55,17 +72,21 @@ class MoviesActivity : ComponentActivity() {
 
     private val moviesSearchViewModel by viewModel<MoviesSearchViewModel>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_movies)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        binding = FragmentMoviesBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        placeholderMessage = findViewById(R.id.placeholderMessage)
-        queryInput = findViewById(R.id.queryInput)
-        moviesList = findViewById(R.id.locations)
-        progressBar = findViewById(R.id.progressBar)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        placeholderMessage = binding.placeholderMessage
+        queryInput = binding.queryInput
+        moviesList = binding.locations
+        progressBar = binding.progressBar
 
         moviesList.layoutManager = LinearLayoutManager(
-            this,
+            requireContext(),
             LinearLayoutManager.VERTICAL,
             false
         )
@@ -85,12 +106,12 @@ class MoviesActivity : ComponentActivity() {
         textWatcher?.let { queryInput.addTextChangedListener(it) }
 
 // Подписываемся на обновления LiveData
-        moviesSearchViewModel.observeState().observe(this) {
+        moviesSearchViewModel.observeState().observe(viewLifecycleOwner) {
             render(it)
         }
 
 // Подписываемся на показ Toast
-        moviesSearchViewModel.observeShowToast().observe(this) {
+        moviesSearchViewModel.observeShowToast().observe(viewLifecycleOwner) {
             showToast(it)
         }
     }
@@ -101,7 +122,7 @@ class MoviesActivity : ComponentActivity() {
     }
 
     private fun showToast(additionalMessage: String) {
-        Toast.makeText(this, additionalMessage, Toast.LENGTH_LONG)
+        Toast.makeText(requireContext(), additionalMessage, Toast.LENGTH_LONG)
             .show()
     }
 
@@ -150,4 +171,5 @@ class MoviesActivity : ComponentActivity() {
         }
         return current
     }
+
 }

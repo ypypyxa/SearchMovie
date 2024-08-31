@@ -8,14 +8,19 @@ import androidx.fragment.app.Fragment
 import com.practiCUM.searchmovie.databinding.FragmentAboutBinding
 import com.practiCUM.searchmovie.domain.models.MovieDetails
 import com.practiCUM.searchmovie.ui.details.about.models.AboutState
-import com.practiCUM.searchmovie.ui.cast.CastActivity
+import com.practiCUM.searchmovie.ui.cast.CastFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+import com.practiCUM.searchmovie.R
+import androidx.fragment.app.commit
 
 class AboutFragment : Fragment() {
 
     companion object {
         private const val MOVIE_ID = "movie_id"
+
+        // Тег для использования во FragmentManager
+        const val TAG = "AboutFragment"
 
         fun newInstance(movieId: String) = AboutFragment().apply {
             arguments = Bundle().apply {
@@ -47,12 +52,17 @@ class AboutFragment : Fragment() {
         }
 
         binding.showCastButton.setOnClickListener {
-            startActivity(
-                CastActivity.newInstance(
-                    context = requireContext(),
-                    movieId = requireArguments().getString(MOVIE_ID).orEmpty()
+            // Осуществляем навигацию
+            parentFragment?.parentFragmentManager?.commit {
+                replace(
+                    R.id.rootFragmentContainerView,
+                    CastFragment.newInstance(
+                        movieId = requireArguments().getString(MOVIE_ID).orEmpty()
+                    ),
+                    CastFragment.TAG
                 )
-            )
+                addToBackStack(CastFragment.TAG)
+            }
         }
     }
 
