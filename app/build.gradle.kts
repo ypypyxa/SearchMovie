@@ -41,6 +41,11 @@ android {
 }
 
 dependencies {
+    // Подключаем основную библиотеку
+    implementation("com.hannesdorfmann:adapterdelegates4-kotlin-dsl:4.3.2")
+    // Подключаем модуль для работы с ViewBinding
+    implementation("com.hannesdorfmann:adapterdelegates4-kotlin-dsl-viewbinding:4.3.2")
+
     implementation("io.insert-koin:koin-android:3.3.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

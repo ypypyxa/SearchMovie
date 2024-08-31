@@ -4,7 +4,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.practiCUM.searchmovie.ui.details.about.AboutMovieFragment
+import com.practiCUM.searchmovie.ui.details.about.AboutFragment
 import com.practiCUM.searchmovie.ui.details.poster.PosterFragment
 
 class DetailsViewPagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle,
@@ -17,7 +17,7 @@ class DetailsViewPagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifec
     override fun createFragment(position: Int): Fragment {
         return when(position) {
             0 -> PosterFragment.newInstance(posterUrl)
-            else -> AboutMovieFragment.newInstance(movieId)
+            else -> AboutFragment.newInstance(movieId)
         }
     }
 }

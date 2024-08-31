@@ -5,18 +5,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.practiCUM.searchmovie.databinding.FragmentAboutMovieBinding
+import com.practiCUM.searchmovie.databinding.FragmentAboutBinding
 import com.practiCUM.searchmovie.domain.models.MovieDetails
 import com.practiCUM.searchmovie.ui.details.about.models.AboutState
+import com.practiCUM.searchmovie.ui.cast.CastActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class AboutMovieFragment : Fragment() {
+class AboutFragment : Fragment() {
 
     companion object {
         private const val MOVIE_ID = "movie_id"
 
-        fun newInstance(movieId: String) = AboutMovieFragment().apply {
+        fun newInstance(movieId: String) = AboutFragment().apply {
             arguments = Bundle().apply {
                 putString(MOVIE_ID, movieId)
             }
@@ -27,11 +28,11 @@ class AboutMovieFragment : Fragment() {
         parametersOf(requireArguments().getString(MOVIE_ID))
     }
 
-    private lateinit var binding: FragmentAboutMovieBinding
+    private lateinit var binding: FragmentAboutBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        binding = FragmentAboutMovieBinding.inflate(inflater, container, false)
+        binding = FragmentAboutBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -43,6 +44,15 @@ class AboutMovieFragment : Fragment() {
                 is AboutState.Content -> showDetails(it.movie)
                 is AboutState.Error -> showErrorMessage(it.message)
             }
+        }
+
+        binding.showCastButton.setOnClickListener {
+            startActivity(
+                CastActivity.newInstance(
+                    context = requireContext(),
+                    movieId = requireArguments().getString(MOVIE_ID).orEmpty()
+                )
+            )
         }
     }
 
