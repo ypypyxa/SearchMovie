@@ -19,9 +19,10 @@ import com.practiCUM.searchmovie.domain.models.Movie
 import com.practiCUM.searchmovie.ui.movies.models.MoviesState
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.practiCUM.searchmovie.R
-import androidx.fragment.app.commit
+import com.practiCUM.searchmovie.core.navigation.api.Router
 import com.practiCUM.searchmovie.ui.details.DetailsFragment
+import org.koin.android.ext.android.inject
+
 
 class MoviesFragment : Fragment() {
 
@@ -31,26 +32,19 @@ class MoviesFragment : Fragment() {
         private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 
+    private val router: Router by inject()
+
     private val adapter = MoviesAdapter (
         object : MoviesAdapter.MovieClickListener {
             override fun onMovieClick(movie: Movie) {
                 if (clickDebounce()) {
-                    parentFragmentManager.commit {
-                        replace(
-                            // Указали, в каком контейнере работаем
-                            R.id.rootFragmentContainerView,
-                            // Создали фрагмент
-                            DetailsFragment.newInstance(
-                                movieId = movie.id,
-                                posterUrl = movie.image
-                            ),
-                            // Указали тег фрагмента
-                            DetailsFragment.TAG
+                    // Переходим на следующий экран с помощью Router
+                    router.openFragment(
+                        DetailsFragment.newInstance(
+                            movieId = movie.id,
+                            posterUrl = movie.image
                         )
-
-                        // Добавляем фрагмент в Back Stack
-                        addToBackStack(DetailsFragment.TAG)
-                    }
+                    )
                 }
             }
 

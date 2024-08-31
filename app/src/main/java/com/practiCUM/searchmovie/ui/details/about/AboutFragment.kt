@@ -11,8 +11,8 @@ import com.practiCUM.searchmovie.ui.details.about.models.AboutState
 import com.practiCUM.searchmovie.ui.cast.CastFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
-import com.practiCUM.searchmovie.R
-import androidx.fragment.app.commit
+import com.practiCUM.searchmovie.core.navigation.api.Router
+import org.koin.android.ext.android.inject
 
 class AboutFragment : Fragment() {
 
@@ -28,6 +28,8 @@ class AboutFragment : Fragment() {
             }
         }
     }
+
+    private val router : Router by inject()
 
     private val aboutViewModel: AboutMovieViewModel by viewModel {
         parametersOf(requireArguments().getString(MOVIE_ID))
@@ -52,17 +54,12 @@ class AboutFragment : Fragment() {
         }
 
         binding.showCastButton.setOnClickListener {
-            // Осуществляем навигацию
-            parentFragment?.parentFragmentManager?.commit {
-                replace(
-                    R.id.rootFragmentContainerView,
-                    CastFragment.newInstance(
-                        movieId = requireArguments().getString(MOVIE_ID).orEmpty()
-                    ),
-                    CastFragment.TAG
+            // Переходим на следующий экран с помощью Router
+            router.openFragment(
+                CastFragment.newInstance(
+                    movieId = requireArguments().getString(MOVIE_ID).orEmpty()
                 )
-                addToBackStack(CastFragment.TAG)
-            }
+            )
         }
     }
 
