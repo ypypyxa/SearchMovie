@@ -13,38 +13,27 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.practiCUM.searchmovie.databinding.FragmentMoviesBinding
 import com.practiCUM.searchmovie.domain.models.Movie
 import com.practiCUM.searchmovie.ui.movies.models.MoviesState
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.practiCUM.searchmovie.core.navigation.api.Router
+import com.practiCUM.searchmovie.R
 import com.practiCUM.searchmovie.ui.details.DetailsFragment
-import org.koin.android.ext.android.inject
 
 
 class MoviesFragment : Fragment() {
 
     private lateinit var binding: FragmentMoviesBinding
 
-    companion object {
-        private const val CLICK_DEBOUNCE_DELAY = 1000L
-    }
-
-    private val router: Router by inject()
-
     private val adapter = MoviesAdapter (
         object : MoviesAdapter.MovieClickListener {
             override fun onMovieClick(movie: Movie) {
                 if (clickDebounce()) {
-                    // Переходим на следующий экран с помощью Router
-                    router.openFragment(
-                        DetailsFragment.newInstance(
-                            movieId = movie.id,
-                            posterUrl = movie.image
-                        )
-                    )
+                    findNavController().navigate(R.id.action_moviesFragment_to_detailsFragment,
+                        DetailsFragment.createArgs(movie.id, movie.image))
                 }
             }
 
@@ -164,6 +153,10 @@ class MoviesFragment : Fragment() {
             handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
         }
         return current
+    }
+
+    companion object {
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 
 }

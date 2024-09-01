@@ -46,6 +46,11 @@ dependencies {
     // Подключаем модуль для работы с ViewBinding
     implementation("com.hannesdorfmann:adapterdelegates4-kotlin-dsl-viewbinding:4.3.2")
 
+    // Navigation Component
+    implementation("androidx.navigation:navigation-fragment-ktx:2.5.3")
+    implementation("androidx.navigation:navigation-ui-ktx:2.5.3")
+    implementation("androidx.fragment:fragment-ktx:1.5.6")
+
     implementation("io.insert-koin:koin-android:3.3.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
