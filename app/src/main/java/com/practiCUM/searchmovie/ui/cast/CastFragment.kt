@@ -16,26 +16,6 @@ import org.koin.core.parameter.parametersOf
 
 class CastFragment : Fragment() {
 
-
-    companion object {
-
-        private const val ARGS_MOVIE_ID = "movie_id"
-
-        // Тег для использования во FragmentManager
-        const val TAG = "CastFragment"
-
-        // Модифицировали метод newInstance — он должен возвращать фрагмент,
-        // а не Intent
-        fun newInstance(movieId: String): Fragment {
-            return CastFragment().apply {
-                arguments = bundleOf(
-                    ARGS_MOVIE_ID to movieId
-                )
-            }
-        }
-
-    }
-
     private val moviesCastViewModel: MoviesCastViewModel by viewModel {
         // параметр movieId берём из аргументов фрагмента, а не Intent
         parametersOf(requireArguments().getString(ARGS_MOVIE_ID))
@@ -93,5 +73,14 @@ class CastFragment : Fragment() {
         adapter.notifyDataSetChanged()
     }
 
+    companion object {
 
+        private const val ARGS_MOVIE_ID = "movie_id"
+
+        // Тег для использования во FragmentManager
+        const val TAG = "CastFragment"
+
+        fun createArgs(movieId: String): Bundle =
+            bundleOf(ARGS_MOVIE_ID to movieId)
+    }
 }

@@ -5,31 +5,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.practiCUM.searchmovie.databinding.FragmentAboutBinding
 import com.practiCUM.searchmovie.domain.models.MovieDetails
 import com.practiCUM.searchmovie.ui.details.about.models.AboutState
 import com.practiCUM.searchmovie.ui.cast.CastFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
-import com.practiCUM.searchmovie.core.navigation.api.Router
-import org.koin.android.ext.android.inject
+import com.practiCUM.searchmovie.R
 
 class AboutFragment : Fragment() {
-
-    companion object {
-        private const val MOVIE_ID = "movie_id"
-
-        // Тег для использования во FragmentManager
-        const val TAG = "AboutFragment"
-
-        fun newInstance(movieId: String) = AboutFragment().apply {
-            arguments = Bundle().apply {
-                putString(MOVIE_ID, movieId)
-            }
-        }
-    }
-
-    private val router : Router by inject()
 
     private val aboutViewModel: AboutMovieViewModel by viewModel {
         parametersOf(requireArguments().getString(MOVIE_ID))
@@ -54,12 +39,8 @@ class AboutFragment : Fragment() {
         }
 
         binding.showCastButton.setOnClickListener {
-            // Переходим на следующий экран с помощью Router
-            router.openFragment(
-                CastFragment.newInstance(
-                    movieId = requireArguments().getString(MOVIE_ID).orEmpty()
-                )
-            )
+            findNavController().navigate(R.id.action_detailsFragment_to_castFragment,
+                CastFragment.createArgs(requireArguments().getString(MOVIE_ID).orEmpty()))
         }
     }
 
@@ -86,4 +67,18 @@ class AboutFragment : Fragment() {
             plot.text = movieDetails.plot
         }
     }
+
+    companion object {
+        private const val MOVIE_ID = "movie_id"
+
+        // Тег для использования во FragmentManager
+        const val TAG = "AboutFragment"
+
+        fun newInstance(movieId: String) = AboutFragment().apply {
+            arguments = Bundle().apply {
+                putString(MOVIE_ID, movieId)
+            }
+        }
+    }
+
 }
