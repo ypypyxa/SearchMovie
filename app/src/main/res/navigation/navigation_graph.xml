@@ -36,4 +36,14 @@
         android:name="com.practiCUM.searchmovie.ui.cast.CastFragment"
         android:label="fragment_cast"
         tools:layout="@layout/fragment_cast" />
+    <fragment
+        android:id="@+id/namesFragment"
+        android:name="com.practiCUM.searchmovie.ui.names.NamesFragment"
+        android:label="fragment_names"
+        tools:layout="@layout/fragment_names" />
+    <fragment
+        android:id="@+id/infoFragment"
+        android:name="com.practiCUM.searchmovie.ui.info.InfoFragment"
+        android:label="fragment_info"
+        tools:layout="@layout/fragment_info" />
 </navigation>
