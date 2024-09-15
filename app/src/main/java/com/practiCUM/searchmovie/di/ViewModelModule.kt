@@ -1,6 +1,6 @@
 package com.practiCUM.searchmovie.di
 
-import com.practiCUM.searchmovie.ui.movies.MoviesSearchViewModel
+import com.practiCUM.searchmovie.ui.movies.MoviesViewModel
 import com.practiCUM.searchmovie.ui.details.poster.PosterViewModel
 import com.practiCUM.searchmovie.ui.details.about.AboutMovieViewModel
 import com.practiCUM.searchmovie.ui.cast.MoviesCastViewModel
@@ -13,7 +13,7 @@ import org.koin.dsl.module
 val viewModelModule = module {
 
     viewModel {
-        MoviesSearchViewModel(get(), androidApplication())
+        MoviesViewModel(get(), androidApplication())
     }
 
     viewModel { (url: String) ->

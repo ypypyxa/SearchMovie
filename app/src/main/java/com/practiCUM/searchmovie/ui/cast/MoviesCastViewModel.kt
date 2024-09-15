@@ -3,9 +3,11 @@ package com.practiCUM.searchmovie.ui.cast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.practiCUM.searchmovie.domain.api.MoviesInteractor
 import com.practiCUM.searchmovie.domain.models.MovieCast
 import com.practiCUM.searchmovie.ui.cast.models.MoviesCastState
+import kotlinx.coroutines.launch
 
 // В конструктор пробросили необходимые для запроса параметры
 class MoviesCastViewModel(
@@ -21,18 +23,22 @@ class MoviesCastViewModel(
     init {
         stateLiveData.postValue(MoviesCastState.Loading)
 
-        moviesInteractor.getMovieCast(movieId, object : MoviesInteractor.MovieCastConsumer {
-
-            override fun consume(movieCast: MovieCast?, errorMessage: String?) {
-                if (movieCast != null) {
-                    // добавляем конвертацию в UiState
-                    stateLiveData.postValue(castToUiStateContent(movieCast))
-                } else {
-                    stateLiveData.postValue(MoviesCastState.Error(errorMessage ?: "Unknown error"))
+        viewModelScope.launch {
+            moviesInteractor
+                .getMovieCast(movieId)
+                .collect { pair ->
+                    processResult(pair.first, pair.second)
                 }
-            }
+        }
+    }
 
-        })
+    private fun processResult(movieCast: MovieCast?, errorMessage: String?) {
+        if (movieCast != null) {
+            // добавляем конвертацию в UiState
+            stateLiveData.postValue(castToUiStateContent(movieCast))
+        } else {
+            stateLiveData.postValue(MoviesCastState.Error(errorMessage ?: "Unknown error"))
+        }
     }
 
     private fun castToUiStateContent(cast: MovieCast): MoviesCastState {

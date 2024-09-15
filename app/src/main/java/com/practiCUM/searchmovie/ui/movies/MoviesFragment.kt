@@ -1,8 +1,6 @@
 package com.practiCUM.searchmovie.ui.movies
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -13,6 +11,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.practiCUM.searchmovie.databinding.FragmentMoviesBinding
@@ -22,26 +21,16 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.practiCUM.searchmovie.R
 import com.practiCUM.searchmovie.ui.details.DetailsFragment
-
+import com.practiCUM.searchmovie.ui.root.RootActivity
+import com.practiCUM.searchmovie.util.debounce
 
 class MoviesFragment : Fragment() {
 
     private lateinit var binding: FragmentMoviesBinding
 
-    private val adapter = MoviesAdapter (
-        object : MoviesAdapter.MovieClickListener {
-            override fun onMovieClick(movie: Movie) {
-                if (clickDebounce()) {
-                    findNavController().navigate(R.id.action_moviesFragment_to_detailsFragment,
-                        DetailsFragment.createArgs(movie.id, movie.image))
-                }
-            }
+    private lateinit var onMovieClickDebounce: (Movie) -> Unit
 
-            override fun onFavoriteToggleClick(movie: Movie) {
-                moviesSearchViewModel.toggleFavorite(movie)
-            }
-        }
-    )
+    private var adapter: MoviesAdapter? = null
 
     private lateinit var queryInput: EditText
     private lateinit var placeholderMessage: TextView
@@ -49,11 +38,7 @@ class MoviesFragment : Fragment() {
     private lateinit var progressBar: ProgressBar
     private lateinit var textWatcher: TextWatcher
 
-    private var isClickAllowed = true
-
-    private val handler = Handler(Looper.getMainLooper())
-
-    private val moviesSearchViewModel by viewModel<MoviesSearchViewModel>()
+    private val moviesViewModel by viewModel<MoviesViewModel>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentMoviesBinding.inflate(inflater, container, false)
@@ -62,6 +47,24 @@ class MoviesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        onMovieClickDebounce = debounce<Movie>(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, false) { movie ->
+            findNavController().navigate(R.id.action_moviesFragment_to_detailsFragment,
+                DetailsFragment.createArgs(movie.id, movie.image))
+        }
+
+        adapter = MoviesAdapter (
+            object : MoviesAdapter.MovieClickListener {
+                override fun onMovieClick(movie: Movie) {
+                    (activity as RootActivity).animateBottomNavigationView()
+                    onMovieClickDebounce(movie)
+                }
+
+                override fun onFavoriteToggleClick(movie: Movie) {
+                    moviesViewModel.toggleFavorite(movie)
+                }
+            }
+        )
 
         placeholderMessage = binding.placeholderMessage
         queryInput = binding.queryInput
@@ -79,7 +82,7 @@ class MoviesFragment : Fragment() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                moviesSearchViewModel?.searchDebounce(
+                moviesViewModel?.searchDebounce(
                     changedText = s?.toString() ?: ""
                 )
             }
@@ -89,18 +92,20 @@ class MoviesFragment : Fragment() {
         textWatcher?.let { queryInput.addTextChangedListener(it) }
 
 // Подписываемся на обновления LiveData
-        moviesSearchViewModel.observeState().observe(viewLifecycleOwner) {
+        moviesViewModel.observeState().observe(viewLifecycleOwner) {
             render(it)
         }
 
 // Подписываемся на показ Toast
-        moviesSearchViewModel.observeShowToast().observe(viewLifecycleOwner) {
+        moviesViewModel.observeShowToast().observe(viewLifecycleOwner) {
             showToast(it)
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        adapter = null
+        moviesList.adapter = null
         textWatcher?.let { queryInput.removeTextChangedListener(it) }
     }
 
@@ -141,22 +146,12 @@ class MoviesFragment : Fragment() {
         placeholderMessage.visibility = View.GONE
         progressBar.visibility = View.GONE
 
-        adapter.movies.clear()
-        adapter.movies.addAll(movies)
-        adapter.notifyDataSetChanged()
-    }
-
-    private fun clickDebounce() : Boolean {
-        val current = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
-        }
-        return current
+        adapter?.movies?.clear()
+        adapter?.movies?.addAll(movies)
+        adapter?.notifyDataSetChanged()
     }
 
     companion object {
-        private const val CLICK_DEBOUNCE_DELAY = 1000L
+        private const val CLICK_DEBOUNCE_DELAY = 500L
     }
-
 }
