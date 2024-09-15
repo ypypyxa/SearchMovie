@@ -34,4 +34,8 @@ class RootActivity : AppCompatActivity() {
             }
         }
     }
+
+    fun animateBottomNavigationView() {
+        binding.bottomNavigationView.visibility = View.GONE
+    }
 }
