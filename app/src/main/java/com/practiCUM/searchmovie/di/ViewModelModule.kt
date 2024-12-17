@@ -4,6 +4,7 @@ import com.practiCUM.searchmovie.ui.movies.MoviesViewModel
 import com.practiCUM.searchmovie.ui.details.poster.PosterViewModel
 import com.practiCUM.searchmovie.ui.details.about.AboutMovieViewModel
 import com.practiCUM.searchmovie.ui.cast.MoviesCastViewModel
+import com.practiCUM.searchmovie.ui.history.HistoryViewModel
 import com.practiCUM.searchmovie.ui.names.NamesViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
@@ -30,5 +31,9 @@ val viewModelModule = module {
 
     viewModel {
         NamesViewModel(androidContext(), get())
+    }
+
+    viewModel {
+        HistoryViewModel(androidContext(), get())
     }
 }
