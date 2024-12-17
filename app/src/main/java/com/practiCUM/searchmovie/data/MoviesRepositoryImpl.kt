@@ -2,10 +2,13 @@ package com.practiCUM.searchmovie.data
 
 import com.practiCUM.searchmovie.data.SharedPrefences.LocalStorage
 import com.practiCUM.searchmovie.data.converters.MovieCastConverter
+import com.practiCUM.searchmovie.data.converters.MovieDbConvertor
+import com.practiCUM.searchmovie.data.db.AppDatabase
 import com.practiCUM.searchmovie.data.dto.MovieCastResponse
 import com.practiCUM.searchmovie.data.dto.MovieCastRequest
 import com.practiCUM.searchmovie.data.dto.MovieDetailsResponse
 import com.practiCUM.searchmovie.data.dto.MovieDetailsRequest
+import com.practiCUM.searchmovie.data.dto.MovieDto
 import com.practiCUM.searchmovie.data.dto.MoviesResponse
 import com.practiCUM.searchmovie.data.dto.MoviesSearchRequest
 import com.practiCUM.searchmovie.domain.api.MoviesRepository
@@ -19,6 +22,8 @@ import kotlinx.coroutines.flow.flow
 class MoviesRepositoryImpl(
     private val networkClient: NetworkClient,
     private val movieCastConverter: MovieCastConverter,
+    private val appDatabase: AppDatabase,
+    private val movieDbConvertor: MovieDbConvertor,
     private val localStorage: LocalStorage
 ) : MoviesRepository {
 
@@ -30,17 +35,21 @@ class MoviesRepositoryImpl(
             }
             200 -> {
                 val stored = localStorage.getSavedFavorites()
-
-                emit(Resource.Success((response as MoviesResponse).results.map {
-                    Movie(
-                        id = it.id,
-                        resultType = it.resultType,
-                        image = it.image,
-                        title = it.title,
-                        description = it.description,
-                        inFavorite = stored.contains(it.id)
-                    )
-                }))
+                with (response as MoviesResponse) {
+                    val data = results.map {
+                        Movie(
+                            id = it.id,
+                            resultType = it.resultType,
+                            image = it.image,
+                            title = it.title,
+                            description = it.description,
+                            inFavorite = stored.contains(it.id)
+                        )
+                    }
+                    //сохраняем список фильмов в базу данных
+                    saveMovie(results)
+                    emit(Resource.Success(data))
+                }
             }
             else -> {
                 emit(Resource.Error("Ошибка сервера"))
@@ -108,5 +117,11 @@ class MoviesRepositoryImpl(
 
     override fun removeMovieFromFavorites(movie: Movie) {
         localStorage.removeFromFavorites(movie.id)
+    }
+
+    // маппим данные из сетевой модели в модель базы данных и сохраняем
+    private suspend fun saveMovie(movies: List<MovieDto>) {
+        val movieEntities = movies.map { movie -> movieDbConvertor.map(movie) }
+        appDatabase.movieDao().insertMovies(movieEntities)
     }
 }

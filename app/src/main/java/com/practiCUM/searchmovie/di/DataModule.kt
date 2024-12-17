@@ -1,9 +1,11 @@
 package com.practiCUM.searchmovie.di
 
 import android.content.Context
+import androidx.room.Room
 import com.google.gson.Gson
 import com.practiCUM.searchmovie.data.NetworkClient
 import com.practiCUM.searchmovie.data.SharedPrefences.LocalStorage
+import com.practiCUM.searchmovie.data.db.AppDatabase
 import com.practiCUM.searchmovie.data.network.IMDbApi
 import com.practiCUM.searchmovie.data.network.RetrofitNetworkClient
 import org.koin.android.ext.koin.androidContext
@@ -34,6 +36,11 @@ val dataModule = module {
 
     single<NetworkClient> {
         RetrofitNetworkClient(get(), androidContext())
+    }
+
+    single {
+        Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database.db")
+            .build()
     }
 
 }

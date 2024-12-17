@@ -12,4 +12,5 @@
     <string name="writer">Сценарист:</string>
     <string name="cast">В ролях:</string>
     <string name="plot">Сюжет:</string>
+    <string name="nothing_searched_yet">Вы еще ни чего не искали</string>
 </resources>

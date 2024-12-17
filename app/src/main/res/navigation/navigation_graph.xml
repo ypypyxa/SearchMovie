@@ -46,4 +46,9 @@
         android:name="com.practiCUM.searchmovie.ui.info.InfoFragment"
         android:label="fragment_info"
         tools:layout="@layout/fragment_info" />
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="com.practiCUM.searchmovie.ui.history.HistoryFragment"
+        android:label="fragment_history"
+        tools:layout="@layout/fragment_history" />
 </navigation>
