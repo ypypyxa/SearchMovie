@@ -23,6 +23,6 @@
         android:layout_marginTop="64dp"
         android:textColor="@color/black"
         android:textSize="24sp"
-        android:text="Версия: 1.0\nРазработчик: Хомяк Байт"
+        android:text="Версия: 1.0\nРазработчик: Антон Анискин"
         android:textAlignment="center"/>
 </LinearLayout>
